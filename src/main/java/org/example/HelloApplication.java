@@ -1,4 +1,4 @@
-package org.example.systemarklab2;
+package org.example;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;

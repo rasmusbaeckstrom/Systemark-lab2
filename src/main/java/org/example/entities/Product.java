@@ -1,16 +1,18 @@
 package org.example.entities;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import jakarta.json.bind.annotation.JsonbDateFormat;
 
 public class Product {
     private final int id;
     private String name;
     private Category category;
     private int rating;
-    private final LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+    @JsonbDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
+    private final OffsetDateTime createdDate;
+    private OffsetDateTime modifiedDate;
 
-    public Product(int id, String name, Category category, int rating, LocalDateTime createdDate) {
+    public Product(int id, String name, Category category, int rating, OffsetDateTime createdDate) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -29,7 +31,7 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
-        this.modifiedDate = LocalDateTime.now();
+        this.modifiedDate = OffsetDateTime.now();
     }
 
     public Category getCategory() {
@@ -38,7 +40,7 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
-        this.modifiedDate = LocalDateTime.now();
+        this.modifiedDate = OffsetDateTime.now();
     }
 
     public int getRating() {
@@ -47,14 +49,26 @@ public class Product {
 
     public void setRating(int rating) {
         this.rating = rating;
-        this.modifiedDate = LocalDateTime.now();
+        this.modifiedDate = OffsetDateTime.now();
     }
 
-    public LocalDateTime getCreatedDate() {
+    public OffsetDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public LocalDateTime getModifiedDate() {
+    public OffsetDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category=" + category +
+                ", rating=" + rating +
+                ", createdDate=" + createdDate +
+                ", modifiedDate=" + modifiedDate +
+                '}';
     }
 }

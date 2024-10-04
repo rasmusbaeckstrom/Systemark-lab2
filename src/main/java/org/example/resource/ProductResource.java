@@ -13,8 +13,8 @@ import java.util.List;
 
 @Path("/products")
 public class ProductResource {
-    private final WarehouseService warehouseService = new WarehouseService();
-    private static final Logger logger = LoggerFactory.getLogger(ProductResource.class);
+    private final WarehouseService warehouseService = WarehouseService.getInstance();
+    public static final Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -23,8 +23,13 @@ public class ProductResource {
         logger.info("Adding product: {}", productRecord);
         try {
             warehouseService.addProduct(productRecord.id(), productRecord.name(), productRecord.category(), productRecord.rating(), productRecord.createdDate());
-            logger.info("Product added successfully {}", productRecord);
-            return Response.status(Response.Status.CREATED).entity("Product added successfully").build();
+            var updatedProductRecord = warehouseService.getProductById(productRecord.id());
+            if (updatedProductRecord.isPresent()) {
+                logger.info("Product added successfully {}", updatedProductRecord.get());
+                return Response.status(Response.Status.CREATED).entity(updatedProductRecord.get()).build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve added product").build();
+            }
         } catch (IllegalArgumentException e) {
             logger.error("Error adding product: {}", e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -35,6 +40,7 @@ public class ProductResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllProducts() {
         List<ProductRecord> products = warehouseService.getAllProducts();
+        logger.info("Retrieved {} products from WarehouseService: {}", products.size(), products);
         return Response.ok(products).build();
     }
 
