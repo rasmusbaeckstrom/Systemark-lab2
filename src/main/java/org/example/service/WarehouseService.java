@@ -1,23 +1,40 @@
 package org.example.service;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.List;
-import java.util.Optional;
-import java.time.LocalDateTime;
 import org.example.entities.Category;
 import org.example.entities.ProductRecord;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static org.example.resource.ProductResource.logger;
+
 public class WarehouseService {
+    private static final WarehouseService instance = new WarehouseService();
     private final Warehouse warehouse = new Warehouse();
     private final Lock lock = new ReentrantLock();
 
-    public void addProduct(int id, String name, Category category, int rating, LocalDateTime createdDate) {
+    private WarehouseService() {}
+
+    public static WarehouseService getInstance() {
+        return instance;
+    }
+
+    public void addProduct(int id, String name, Category category, int rating, OffsetDateTime createdDate) {
         lock.lock();
         try {
             warehouse.addProduct(id, name, category, rating, createdDate);
+            Optional<ProductRecord> productRecord = warehouse.getProductById(id);
+            if (productRecord.isPresent()) {
+                ProductRecord record = productRecord.get();
+                logger.info("Product added successfully {}", record);
+            }
+            List<ProductRecord> allProducts = warehouse.getAllProducts();
+            logger.info("All products after addition: {}", allProducts);
         } finally {
             lock.unlock();
         }
@@ -26,7 +43,9 @@ public class WarehouseService {
     public List<ProductRecord> getAllProducts() {
         lock.lock();
         try {
-            return warehouse.getAllProducts();
+            List<ProductRecord> products = warehouse.getAllProducts();
+            logger.info("WarehouseService retrieved products: {}", products);
+            return products;
         } finally {
             lock.unlock();
         }
@@ -59,7 +78,7 @@ public class WarehouseService {
         }
     }
 
-    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(LocalDateTime date) {
+    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(OffsetDateTime date) {
         lock.lock();
         try {
             return warehouse.getAllProductsCreatedAfterASpecificDate(date);
