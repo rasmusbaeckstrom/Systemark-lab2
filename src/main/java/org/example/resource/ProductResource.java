@@ -1,5 +1,6 @@
 package org.example.resource;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -8,18 +9,19 @@ import org.example.entities.ProductRecord;
 import org.example.service.WarehouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
+
 
 @Path("/products")
 public class ProductResource {
     private final WarehouseService warehouseService = WarehouseService.getInstance();
     public static final Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
+    // Add a product
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addProduct(ProductRecord productRecord) {
+    public Response addProduct(@Valid ProductRecord productRecord) {
         logger.info("Adding product: {}", productRecord);
         try {
             warehouseService.addProduct(productRecord.id(), productRecord.name(), productRecord.category(), productRecord.rating(), productRecord.createdDate());
@@ -36,6 +38,7 @@ public class ProductResource {
         }
     }
 
+    // Get all products
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllProducts() {
@@ -44,6 +47,7 @@ public class ProductResource {
         return Response.ok(products).build();
     }
 
+    // Get product by ID
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -59,6 +63,7 @@ public class ProductResource {
         });
     }
 
+    // Get products by category
     @GET
     @Path("/category/{category}")
     @Produces(MediaType.APPLICATION_JSON)

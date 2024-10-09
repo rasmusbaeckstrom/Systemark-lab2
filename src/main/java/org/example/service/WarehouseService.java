@@ -2,8 +2,7 @@ package org.example.service;
 
 import org.example.entities.Category;
 import org.example.entities.ProductRecord;
-
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,7 +10,6 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static org.example.resource.ProductResource.logger;
 
 public class WarehouseService {
     private static final WarehouseService instance = new WarehouseService();
@@ -24,17 +22,14 @@ public class WarehouseService {
         return instance;
     }
 
-    public void addProduct(int id, String name, Category category, int rating, OffsetDateTime createdDate) {
+    public void addProduct(int id, String name, Category category, int rating, LocalDateTime createdDate) {
         lock.lock();
         try {
             warehouse.addProduct(id, name, category, rating, createdDate);
             Optional<ProductRecord> productRecord = warehouse.getProductById(id);
             if (productRecord.isPresent()) {
                 ProductRecord record = productRecord.get();
-                logger.info("Product added successfully {}", record);
             }
-            List<ProductRecord> allProducts = warehouse.getAllProducts();
-            logger.info("All products after addition: {}", allProducts);
         } finally {
             lock.unlock();
         }
@@ -44,7 +39,6 @@ public class WarehouseService {
         lock.lock();
         try {
             List<ProductRecord> products = warehouse.getAllProducts();
-            logger.info("WarehouseService retrieved products: {}", products);
             return products;
         } finally {
             lock.unlock();
@@ -78,7 +72,7 @@ public class WarehouseService {
         }
     }
 
-    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(OffsetDateTime date) {
+    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(LocalDateTime date) {
         lock.lock();
         try {
             return warehouse.getAllProductsCreatedAfterASpecificDate(date);

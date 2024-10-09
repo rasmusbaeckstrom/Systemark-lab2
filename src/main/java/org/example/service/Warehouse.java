@@ -8,14 +8,10 @@ package org.example.service;
 import org.example.entities.Category;
 import org.example.entities.Product;
 import org.example.entities.ProductRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.example.resource.ProductResource.logger;
 
 public class Warehouse {
     private final List<Product> products = new ArrayList<>();
@@ -45,14 +41,12 @@ public class Warehouse {
     }
 
     // Method to add a product
-    public void addProduct(int id, String name, Category category, int rating, OffsetDateTime createdDate) {
+    public void addProduct(int id, String name, Category category, int rating, LocalDateTime createdDate) {
         validateProductId(id);
         validateProduct(name, rating);
         checkIfProductIdExists(id);
         Product product = new Product(id, name, category, rating, createdDate);
         products.add(product);
-        logger.info("Product added: {}", product);
-        logger.info("Current products list: {}", products);
     }
 
 
@@ -61,7 +55,6 @@ public class Warehouse {
         List<ProductRecord> productRecords = products.stream()
                 .map(p -> new ProductRecord(p.getId(), p.getName(), p.getCategory(), p.getRating(), p.getCreatedDate(), p.getModifiedDate()))
                 .collect(Collectors.toList());
-        logger.info("Retrieved {} products: {}", productRecords.size(), productRecords);
         return Collections.unmodifiableList(productRecords);
     }
 
@@ -103,7 +96,7 @@ public class Warehouse {
     }
 
     // Method to get all products created after a specific date
-    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(OffsetDateTime date) {
+    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(LocalDateTime date) {
         List<ProductRecord> productRecords = products.stream()
                 .filter(p -> p.getCreatedDate().isAfter(date))
                 .map(p -> new ProductRecord(p.getId(), p.getName(), p.getCategory(), p.getRating(), p.getCreatedDate(), p.getModifiedDate()))
@@ -144,9 +137,9 @@ public class Warehouse {
 
     // Method to get all products with max rating, created this month and sorted by date with the latest first
     public List<ProductRecord> getAllProductsWithMaxRatingCreatedThisMonthSortedByDate() {
-        OffsetDateTime now = OffsetDateTime.now();
-        OffsetDateTime startOfMonth = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-        OffsetDateTime endOfMonth = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfMonth = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfMonth = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
         List<ProductRecord> productRecords = products.stream()
                 .filter(p -> p.getRating() == 10 && p.getCreatedDate().isAfter(startOfMonth) && p.getCreatedDate().isBefore(endOfMonth))
                 .sorted(Comparator.comparing(Product::getCreatedDate).reversed())
