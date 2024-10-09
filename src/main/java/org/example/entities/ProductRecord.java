@@ -2,7 +2,7 @@ package org.example.entities;
 
 import jakarta.validation.constraints.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 public record ProductRecord(
         @Min(value = 1, message = "Id should not be less than 1")
@@ -13,7 +13,7 @@ public record ProductRecord(
         Category category,
         @Min(1) @Max(10)
         int rating,
-        @NotNull
-        OffsetDateTime createdDate,
-        OffsetDateTime modifiedDate) {
+        @PastOrPresent
+        LocalDateTime createdDate,
+        LocalDateTime modifiedDate) {
 }
