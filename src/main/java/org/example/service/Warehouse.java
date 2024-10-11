@@ -49,7 +49,6 @@ public class Warehouse {
         products.add(product);
     }
 
-
     // Method to get all products
     public List<ProductRecord> getAllProducts() {
         List<ProductRecord> productRecords = products.stream()

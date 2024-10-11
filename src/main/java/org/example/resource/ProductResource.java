@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.example.entities.Category;
 import org.example.entities.ProductRecord;
+import org.example.exceptionmapper.ProductNotFoundException;
 import org.example.service.WarehouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,24 +18,20 @@ public class ProductResource {
     private final WarehouseService warehouseService = WarehouseService.getInstance();
     public static final Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
+
     // Add a product
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addProduct(@Valid ProductRecord productRecord) {
         logger.info("Adding product: {}", productRecord);
-        try {
-            warehouseService.addProduct(productRecord.id(), productRecord.name(), productRecord.category(), productRecord.rating(), productRecord.createdDate());
-            var updatedProductRecord = warehouseService.getProductById(productRecord.id());
-            if (updatedProductRecord.isPresent()) {
-                logger.info("Product added successfully {}", updatedProductRecord.get());
-                return Response.status(Response.Status.CREATED).entity(updatedProductRecord.get()).build();
-            } else {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve added product").build();
-            }
-        } catch (IllegalArgumentException e) {
-            logger.error("Error adding product: {}", e.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        warehouseService.addProduct(productRecord.id(), productRecord.name(), productRecord.category(), productRecord.rating(), productRecord.createdDate());
+        var updatedProductRecord = warehouseService.getProductById(productRecord.id());
+        if (updatedProductRecord.isPresent()) {
+            logger.info("Product added successfully {}", updatedProductRecord.get());
+            return Response.status(Response.Status.CREATED).entity(updatedProductRecord.get()).build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve added product").build();
         }
     }
 
@@ -57,10 +54,7 @@ public class ProductResource {
         return product.map(p -> {
             logger.info("Product found: {}", p);
             return Response.ok(p).build();
-        }).orElseGet(() -> {
-            logger.warn("Product not found with ID: {}", id);
-            return Response.status(Response.Status.NOT_FOUND).entity("Product not found").build();
-        });
+        }).orElseThrow(() -> new ProductNotFoundException("Product with ID " + id + " not found"));
     }
 
     // Get products by category
