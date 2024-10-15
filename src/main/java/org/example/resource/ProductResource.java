@@ -1,5 +1,6 @@
 package org.example.resource;
 
+import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -15,9 +16,17 @@ import java.util.List;
 
 @Path("/products")
 public class ProductResource {
-    private final WarehouseService warehouseService = WarehouseService.getInstance();
+    private final WarehouseService warehouseService;
     public static final Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
+    public ProductResource() {
+        this.warehouseService = null;
+    }
+
+    @Inject
+    public ProductResource(WarehouseService warehouseService) {
+        this.warehouseService = warehouseService;
+    }
 
     // Add a product
     @POST

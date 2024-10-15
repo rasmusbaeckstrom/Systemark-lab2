@@ -1,5 +1,6 @@
 package org.example.service;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.example.entities.Category;
 import org.example.entities.ProductRecord;
 import java.time.LocalDateTime;
@@ -11,16 +12,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
+@ApplicationScoped
 public class WarehouseService {
-    private static final WarehouseService instance = new WarehouseService();
     private final Warehouse warehouse = new Warehouse();
     private final Lock lock = new ReentrantLock();
 
-    private WarehouseService() {}
-
-    public static WarehouseService getInstance() {
-        return instance;
-    }
+    public WarehouseService() {}
 
     public void addProduct(int id, String name, Category category, int rating, LocalDateTime createdDate) {
         lock.lock();
