@@ -1,8 +1,9 @@
 package org.example.service;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.example.entities.Category;
 import org.example.entities.ProductRecord;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,18 +12,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
+@ApplicationScoped
 public class WarehouseService {
-    private static final WarehouseService instance = new WarehouseService();
     private final Warehouse warehouse = new Warehouse();
     private final Lock lock = new ReentrantLock();
 
-    private WarehouseService() {}
+    public WarehouseService() {}
 
-    public static WarehouseService getInstance() {
-        return instance;
-    }
-
-    public void addProduct(int id, String name, Category category, int rating, LocalDateTime createdDate) {
+    public void addProduct(int id, String name, Category category, int rating, Date createdDate) {
         lock.lock();
         try {
             warehouse.addProduct(id, name, category, rating, createdDate);
@@ -72,7 +69,7 @@ public class WarehouseService {
         }
     }
 
-    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(LocalDateTime date) {
+    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(Date date) {
         lock.lock();
         try {
             return warehouse.getAllProductsCreatedAfterASpecificDate(date);

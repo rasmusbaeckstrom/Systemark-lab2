@@ -1,0 +1,24 @@
+### Get all products
+GET http://localhost:8080/Systemark-lab2-1.0-SNAPSHOT/api/products
+Accept: application/json
+
+### Get product by ID
+GET http://localhost:8080/Systemark-lab2-1.0-SNAPSHOT/api/products/1
+Accept: application/json
+
+### Get products by category
+GET http://localhost:8080/Systemark-lab2-1.0-SNAPSHOT/api/products/category/BOOKS
+Accept: application/json
+
+### Add a new product
+POST http://localhost:8080/Systemark-lab2-1.0-SNAPSHOT/api/products
+Content-Type: application/json
+
+{
+  "id": 4,
+  "name": "New Product",
+  "category": "BOOKS",
+  "rating": 8,
+  "createdDate": "2023-10-01T12:00:00",
+  "modifiedDate": "2023-10-01T12:00:00"
+}

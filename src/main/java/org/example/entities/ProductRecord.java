@@ -1,7 +1,7 @@
 package org.example.entities;
 
 import jakarta.validation.constraints.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public record ProductRecord(
         @Min(value = 1, message = "Product ID must be at least 1.")
@@ -14,6 +14,6 @@ public record ProductRecord(
         @Max(value = 10, message = "Product rating must be at most 10.")
         int rating,
         @PastOrPresent(message = "Product creation date cannot be in the future.")
-        LocalDateTime createdDate,
-        LocalDateTime modifiedDate) {
+        Date createdDate,
+        Date modifiedDate) {
 }
