@@ -1,14 +1,8 @@
-// Warehouse class concerns the business logic of the application.
-// It contains a list of products and provides methods to add, update and retrieve products.
-// It uses the Product, ProductRecord and Category classes to represent products and categories.
-
-
 package org.example.service;
 
 import org.example.entities.Category;
 import org.example.entities.Product;
 import org.example.entities.ProductRecord;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,7 +35,7 @@ public class Warehouse {
     }
 
     // Method to add a product
-    public void addProduct(int id, String name, Category category, int rating, LocalDateTime createdDate) {
+    public void addProduct(int id, String name, Category category, int rating, Date createdDate) {
         validateProductId(id);
         validateProduct(name, rating);
         checkIfProductIdExists(id);
@@ -95,9 +89,9 @@ public class Warehouse {
     }
 
     // Method to get all products created after a specific date
-    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(LocalDateTime date) {
+    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(Date date) {
         List<ProductRecord> productRecords = products.stream()
-                .filter(p -> p.getCreatedDate().isAfter(date))
+                .filter(p -> p.getCreatedDate().after(date))
                 .map(p -> new ProductRecord(p.getId(), p.getName(), p.getCategory(), p.getRating(), p.getCreatedDate(), p.getModifiedDate()))
                 .collect(Collectors.toList());
         return Collections.unmodifiableList(productRecords);
@@ -106,7 +100,7 @@ public class Warehouse {
     // Method to get all products that have been modified since creation
     public List<ProductRecord> getAllProductsThatHasBeenModifiedSinceCreation() {
         List<ProductRecord> productRecords = products.stream()
-                .filter(p -> p.getModifiedDate().isAfter(p.getCreatedDate()))
+                .filter(p -> p.getModifiedDate().after(p.getCreatedDate()))
                 .map(p -> new ProductRecord(p.getId(), p.getName(), p.getCategory(), p.getRating(), p.getCreatedDate(), p.getModifiedDate()))
                 .collect(Collectors.toList());
         return Collections.unmodifiableList(productRecords);
@@ -136,11 +130,23 @@ public class Warehouse {
 
     // Method to get all products with max rating, created this month and sorted by date with the latest first
     public List<ProductRecord> getAllProductsWithMaxRatingCreatedThisMonthSortedByDate() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfMonth = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime endOfMonth = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        Calendar now = Calendar.getInstance();
+        now.set(Calendar.DAY_OF_MONTH, 1);
+        now.set(Calendar.HOUR_OF_DAY, 0);
+        now.set(Calendar.MINUTE, 0);
+        now.set(Calendar.SECOND, 0);
+        now.set(Calendar.MILLISECOND, 0);
+        Date startOfMonth = now.getTime();
+
+        now.set(Calendar.DAY_OF_MONTH, now.getActualMaximum(Calendar.DAY_OF_MONTH));
+        now.set(Calendar.HOUR_OF_DAY, 23);
+        now.set(Calendar.MINUTE, 59);
+        now.set(Calendar.SECOND, 59);
+        now.set(Calendar.MILLISECOND, 999);
+        Date endOfMonth = now.getTime();
+
         List<ProductRecord> productRecords = products.stream()
-                .filter(p -> p.getRating() == 10 && p.getCreatedDate().isAfter(startOfMonth) && p.getCreatedDate().isBefore(endOfMonth))
+                .filter(p -> p.getRating() == 10 && p.getCreatedDate().after(startOfMonth) && p.getCreatedDate().before(endOfMonth))
                 .sorted(Comparator.comparing(Product::getCreatedDate).reversed())
                 .map(p -> new ProductRecord(p.getId(), p.getName(), p.getCategory(), p.getRating(), p.getCreatedDate(), p.getModifiedDate()))
                 .collect(Collectors.toList());

@@ -3,7 +3,7 @@ package org.example.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.example.entities.Category;
 import org.example.entities.ProductRecord;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,7 +19,7 @@ public class WarehouseService {
 
     public WarehouseService() {}
 
-    public void addProduct(int id, String name, Category category, int rating, LocalDateTime createdDate) {
+    public void addProduct(int id, String name, Category category, int rating, Date createdDate) {
         lock.lock();
         try {
             warehouse.addProduct(id, name, category, rating, createdDate);
@@ -69,7 +69,7 @@ public class WarehouseService {
         }
     }
 
-    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(LocalDateTime date) {
+    public List<ProductRecord> getAllProductsCreatedAfterASpecificDate(Date date) {
         lock.lock();
         try {
             return warehouse.getAllProductsCreatedAfterASpecificDate(date);
