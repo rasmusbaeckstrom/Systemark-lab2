@@ -1,5 +1,5 @@
-# Stage 1: Build the application using Maven
-FROM maven:3.8.4-openjdk-11 AS build
+# Stage 1: Build the application using Maven and Java 21
+FROM maven:3.8.7-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copy the Maven project files
