@@ -1,6 +1,9 @@
 # Stage 1: Build the application using Maven and Java 21
-FROM maven:3.8.7-eclipse-temurin-21 AS build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
+
+# Install Maven
+RUN apt-get update && apt-get install -y maven
 
 # Copy the Maven project files
 COPY pom.xml .
